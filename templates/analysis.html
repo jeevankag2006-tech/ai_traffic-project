@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Traffic Analysis</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: #0b1f3a;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+        }
+        
+        canvas {
+            margin-top: 20px;
+        }
+        
+        .box {
+            margin-top: 20px;
+            padding: 10px;
+            background: #132f4c;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #00e5ff;
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>📊 Traffic Analysis Dashboard</h1>
+
+    <!-- BAR CHART -->
+    <canvas id="barChart" width="400" height="200"></canvas>
+
+    <!-- PIE CHART -->
+    <canvas id="pieChart" width="400" height="200"></canvas>
+
+    <!-- INFO BOX -->
+    <div class="box">
+        <p id="total"></p>
+        <p id="suggestion"></p>
+    </div>
+
+    <br>
+    <button onclick="location.href='/result'">⬅ Back</button>
+
+    <script>
+        let data = {
+            {
+                counts
+            }
+        };
+
+        // TOTAL
+        let total = data.reduce((a, b) => a + b, 0);
+        document.getElementById("total").innerText = "🚗 Total Vehicles: " + total;
+
+        // BEST LANE
+        let max = Math.max(...data);
+        let bestLane = data.indexOf(max) + 1;
+
+        document.getElementById("suggestion").innerText =
+            "🤖 Suggestion: Lane " + bestLane + " has highest traffic → Give longer GREEN signal";
+
+        // BAR CHART
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Lane 1', 'Lane 2', 'Lane 3', 'Lane 4'],
+                datasets: [{
+                    label: 'Vehicle Count',
+                    data: data,
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // PIE CHART
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Lane 1', 'Lane 2', 'Lane 3', 'Lane 4'],
+                datasets: [{
+                    data: data
+                }]
+            }
+        });
+    </script>
+
+</body>
+
+</html>

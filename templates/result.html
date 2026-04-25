@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traffic Analysis Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .recommendations {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .priority-high {
+            border-left-color: #ff4444;
+        }
+        
+        .priority-medium {
+            border-left-color: #ffaa00;
+        }
+        
+        .priority-low {
+            border-left-color: #00ff88;
+        }
+        
+        .btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚦 Traffic Analysis Results</h1>
+            <p>AI-powered traffic density analysis and recommendations</p>
+        </div>
+        
+        {% if results %}
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ results.traffic_analysis.total_vehicles_detected }}</div>
+                <div class="stat-label">Total Vehicles Detected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ "%.1f"|format(results.traffic_analysis.average_vehicles_per_frame) }}</div>
+                <div class="stat-label">Avg Vehicles per Frame</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ results.traffic_analysis.peak_density }}</div>
+                <div class="stat-label">Peak Density</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ "%.1f"|format(results.video_info.duration) }}s</div>
+                <div class="stat-label">Video Duration</div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="charts-container">
+            <div class="chart-box">
+                <h3>Vehicle Types Distribution</h3>
+                <canvas id="vehicleTypeChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Traffic Density Timeline</h3>
+                <canvas id="densityTimelineChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="recommendations">
+            <h3>🤖 AI Recommendations</h3>
+            {% if results.recommendations %}
+                {% for rec in results.recommendations %}
+                <div class="recommendation-item priority-{{ rec.priority.lower() }}">
+                    <strong>{{ rec.type|title }}:</strong> {{ rec.message }}
+                    <br><small>Priority: {{ rec.priority }}</small>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No specific recommendations at this time.</p>
+            {% endif %}
+        </div>
+        
+        {% else %}
+        <div style="text-align: center; margin: 50px;">
+            <h2>No analysis results available</h2>
+            <p>Please upload and analyze a video first.</p>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="location.href='/upload'">📤 Upload New Video</button>
+            <button class="btn btn-secondary" onclick="location.href='/dashboard'">📊 Dashboard</button>
+            <button class="btn btn-secondary" onclick="location.href='/'">🏠 Home</button>
+        </div>
+    </div>
+    
+    <script>
+        {% if results %}
+        // Vehicle Type Chart
+        const vehicleTypeCtx = document.getElementById('vehicleTypeChart').getContext('2d');
+        const vehicleTypeData = {{ results.traffic_analysis.vehicle_types | tojson | safe }};
+        
+        new Chart(vehicleTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(vehicleTypeData),
+                datasets: [{
+                    data: Object.values(vehicleTypeData),
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB', 
+                        '#FFCE56',
+                        '#4BC0C0'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Density Timeline Chart
+        const densityCtx = document.getElementById('densityTimelineChart').getContext('2d');
+        const densityData = {{ results.traffic_analysis.density_timeline | tojson | safe }};
+        
+        new Chart(densityCtx, {
+            type: 'line',
+            data: {
+                labels: densityData.map(d => d.time.toFixed(1) + 's'),
+                datasets: [{
+                    label: 'Vehicle Count',
+                    data: densityData.map(d => d.vehicle_count),
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+        {% endif %}
+    </script>
+</body>
+</html>

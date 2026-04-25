@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload Videos</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(to right, #0f2027, #2c5364);
+            color: white;
+            text-align: center;
+        }
+        
+        .header {
+            padding: 30px;
+        }
+        
+        .container {
+            margin-top: 30px;
+        }
+        
+        .box {
+            background: white;
+            color: black;
+            padding: 20px;
+            margin: 10px auto;
+            width: 300px;
+            border-radius: 10px;
+        }
+        
+        input {
+            margin-top: 10px;
+        }
+        
+        button {
+            background: #00c853;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🎥 Upload Traffic Videos</h1>
+        <p>Select 4 lane videos</p>
+    </div>
+
+    <div class="container">
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="box">
+                <h3>Lane 1</h3>
+                <input type="file" name="videos">
+            </div>
+
+            <div class="box">
+                <h3>Lane 2</h3>
+                <input type="file" name="videos">
+            </div>
+
+            <div class="box">
+                <h3>Lane 3</h3>
+                <input type="file" name="videos">
+            </div>
+
+            <div class="box">
+                <h3>Lane 4</h3>
+                <input type="file" name="videos">
+            </div>
+
+            <button type="submit">🚀 Upload & Start AI</button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(to right, #1d2671, #c33764);
+            color: white;
+            text-align: center;
+        }
+        
+        .header {
+            padding: 40px;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .card {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 15px;
+            width: 200px;
+        }
+        
+        button {
+            background: #00c853;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📊 ITMS Dashboard</h1>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+            <h3>Upload Videos</h3>
+            <button onclick="location.href='/upload'">Open</button>
+        </div>
+
+        <div class="card">
+            <h3>Logout</h3>
+            <button onclick="location.href='/'">Logout</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
